@@ -20,13 +20,21 @@ async (req, res)=>{
     const salt = await bcrypt.genSalt(10);
     let secPassword = await bcrypt.hash(req.body.password, salt);
     try {
-        await User.create({
+         const userData = await User.create({
             name: req.body.name ,
             password: secPassword,
             email: req.body.email,
             location: req.body.location
         })
-    res.json({success:true});
+     // res.json({success:true});
+        const data = {
+            user: {
+                id:userData.id
+            }
+        }
+        
+        const authToken = jwt.sign(data, jwtSecret)
+        return res.json({success:true, authToken:authToken});
 
     } catch (error) {
         console.log("Error:", error)
